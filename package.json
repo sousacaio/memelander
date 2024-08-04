@@ -33,6 +33,7 @@
     "node-fetch": "^2.7.0",
     "opusscript": "^0.0.8",
     "puppeteer": "^22.13.1",
+    "redis": "^4.7.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {

@@ -16,6 +16,7 @@ import * as queryBuilder from '../infra/mongodb/mongo-query-builder'
 import storageRepository from '../repository/storage.repository';
 import * as serverRepository from '../repository/server.repository';
 import { render as MemeButtonsComponent } from './shared-components/meme-buttons'
+import { cacheSet } from '../infra/redis';
 interface MemeState {
   memeId: String
   name: String
@@ -209,6 +210,7 @@ export async function interaction(interaction: Interaction | any) {
 
 async function addSound(memeState: MemeState) {
   const meme = await memeRepository.store(memeState);
+  await cacheSet(`meme:${meme.memeId}`, memeState)
   resetMemeState();
   return { success: true, content: memeState.name, soundId: meme.id };
 }
@@ -275,6 +277,10 @@ async function collectionUploadFile(interaction: any) {
   const collector = interaction.channel.createMessageCollector({ filter, max: 1, time: 60000 });
   const server = await serverRepository.findById(interaction.guild.id);
 
+  if (!server) {
+    await interaction.reply({ content: 'Server not found', ephemeral: true });
+    return;
+  }
   collector.on('collect', async (message: any) => {
     const name = interaction.fields.getTextInputValue('name_input')
     const volume = interaction.fields.getTextInputValue('volume_input_file')
@@ -335,6 +341,7 @@ async function collectionUploadFile(interaction: any) {
     }
   });
 }
+
 async function addExistsMeme(server: any, customId: any) {
   console.log('Adding existing meme');
   const sound = await memeRepository.findById(customId);
