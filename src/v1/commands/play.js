@@ -5,7 +5,7 @@ const { serverRepository } = require('../repository/server.repository');
 const MemeButtonsComponent = require('./shared-components/meme-buttons');
 
 function body() {
-  try {    
+  try {
     return new SlashCommandBuilder()
       .setName('play')
       .setDescription('mostrando opcoes de memes!')
@@ -47,13 +47,13 @@ async function interaction({ interaction }) {
       clearTimeoutBot();
 
       const sound = await memeRepository.findById(interaction.customId);
-  
+
       if (!sound) {
         await interaction.reply({ content: 'meme nao encontrado!', ephemeral: true });
         return;
       }
-  
-      await interaction.reply(`${interaction.user.username} clicou em ${sound.emoji} ${sound.name}!`);
+
+      await interaction.reply(`${interaction.user.username} clicou em ${sound.emoji || '😄'}} ${sound.name}!`);
       await playMeme(sound.url, sound?.volume, interaction);
     }
   }

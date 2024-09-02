@@ -7,18 +7,23 @@ const MAX_DURATION_SEC = 30;
 
 class StorageRepository {
   cloudService = null;
-  
+
   constructor(cloudService) {
     this.cloudService = cloudService;
   }
 
-  async add(url, memeId) {
-    console.log('Fetching file from url:', url );
-    const response = await fetch(url);
-    
-    if (!response.ok) return { success: false, content: 'Error fetching file' };
+  async add(url, memeId, orginalBuffer) {
+    console.log('Fetching file from url:', url);
+    let buffer = orginalBuffer;
 
-    const buffer = await response.buffer();
+    if (!buffer) {
+      console.log('Fetching file from url:', url);
+      const response = await fetch(url);
+
+      if (!response.ok) return { success: false, content: 'Error fetching file' };
+      buffer = await response.buffer();
+    }
+
     console.log('Buffer length:', buffer.length);
     if (buffer.length > THREE_MB) {
       console.log('File too big');
@@ -35,7 +40,7 @@ class StorageRepository {
     }
 
     const urlFile = await this.cloudService.upload(buffer, memeId);
-    return  { success: true, content: urlFile };
+    return { success: true, content: urlFile };
   }
 
   get() {
