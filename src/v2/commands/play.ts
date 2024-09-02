@@ -1,15 +1,11 @@
 import {
     SlashCommandBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
     InteractionType,
 } from 'discord.js';
 import { clearTimeoutBot, playMeme } from '../services/actionsService';
 import * as memeRepository from '../repository/memes.repository';
 import * as serverRepository from '../repository/server.repository';
 import { render as MemeButtonsComponent } from './shared-components/meme-buttons'
-import { cacheGet, cacheSet } from '../infra/redis';
 
 export function body(): SlashCommandBuilder {
     try {
@@ -58,21 +54,8 @@ export async function interaction(interaction: any): Promise<void> {
         if (interaction.isButton && from === 'MEME') {
             const inicio = performance.now()
             clearTimeoutBot();
-            const memeOnCache = await cacheGet(`meme:${interaction.customId}`)
-
-            if (memeOnCache) {
-                await interaction.reply(
-                    `${interaction.user.username} clicou em ${memeOnCache.name}!`
-                );
-                await playMeme(memeOnCache.url, memeOnCache?.volume, interaction);
-                const fim = performance.now()
-                console.log('duration cached:', fim - inicio)
-                return
-            }
 
             const sound = await memeRepository.findById(interaction.customId);
-
-            await cacheSet(`meme:${sound.memeId}`, sound)
 
             if (!sound) {
                 await interaction.reply({
@@ -86,8 +69,6 @@ export async function interaction(interaction: any): Promise<void> {
                 `${interaction.user.username} clicou em ${sound.name}!`
             );
             await playMeme(sound.url, sound?.volume, interaction);
-            const fim = performance.now()
-            console.log('duration:', fim - inicio)
         }
     }
 }

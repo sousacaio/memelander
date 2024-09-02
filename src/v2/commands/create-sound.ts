@@ -16,7 +16,6 @@ import * as queryBuilder from '../infra/mongodb/mongo-query-builder'
 import storageRepository from '../repository/storage.repository';
 import * as serverRepository from '../repository/server.repository';
 import { render as MemeButtonsComponent } from './shared-components/meme-buttons'
-import { cacheSet } from '../infra/redis';
 interface MemeState {
   memeId: String
   name: String
@@ -210,7 +209,6 @@ export async function interaction(interaction: Interaction | any) {
 
 async function addSound(memeState: MemeState) {
   const meme = await memeRepository.store(memeState);
-  await cacheSet(`meme:${meme.memeId}`, memeState)
   resetMemeState();
   return { success: true, content: memeState.name, soundId: meme.id };
 }
