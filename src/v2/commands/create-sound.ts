@@ -4,8 +4,8 @@ import {
   TextInputBuilder,
   ActionRowBuilder,
   TextInputStyle,
-  InteractionType
-  , ButtonStyle,
+  InteractionType,
+  ButtonStyle,
   ButtonBuilder,
   Interaction,
 } from 'discord.js';

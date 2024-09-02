@@ -52,7 +52,6 @@ export async function interaction(interaction: any): Promise<void> {
         const from = interaction?.customId.split('_')[0];
 
         if (interaction.isButton && from === 'MEME') {
-            const inicio = performance.now()
             clearTimeoutBot();
 
             const sound = await memeRepository.findById(interaction.customId);
@@ -65,9 +64,7 @@ export async function interaction(interaction: any): Promise<void> {
                 return;
             }
 
-            await interaction.reply(
-                `${interaction.user.username} clicou em ${sound.name}!`
-            );
+            await interaction.reply(`${interaction.user.username} } clicou em ${sound?.emoji || '😄'} ${sound.name}!`)
             await playMeme(sound.url, sound?.volume, interaction);
         }
     }

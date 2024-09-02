@@ -11,13 +11,16 @@ class StorageRepository {
     this.cloudService = cloudService;
   }
 
-  async add(url: string, memeId: string) {
-    console.log('Buscando arquivo a partir da URL:', url);
-    const response = await fetch(url);
+  async add(url: string, memeId: string, orginalBuffer: Buffer) {
+    let buffer = orginalBuffer;
 
-    if (!response.ok) return { success: false, content: 'Erro ao buscar o arquivo' };
+    if (!buffer) {
+      console.log('Fetching file from url:', url);
+      const response = await fetch(url);
 
-    const buffer = await response.buffer();
+      if (!response.ok) return { success: false, content: 'Error fetching file' };
+      buffer = await response.buffer();
+    }
     console.log('Tamanho do buffer:', buffer.length);
     if (buffer.length > THREE_MB) {
       console.log('Arquivo muito grande');
